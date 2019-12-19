@@ -14,6 +14,7 @@ import static org.pp.socket.bio.CommandConstant.SERVER_PORT;
 
 /**
  * 表示连接的客户端
+ * 阻塞通信，在连接服务器、读写数据、soLinger选项关闭时
  */
 public class TheSocketClient {
 

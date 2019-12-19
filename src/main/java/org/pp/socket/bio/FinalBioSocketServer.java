@@ -10,6 +10,7 @@ import static org.pp.socket.bio.CommandConstant.SERVER_PORT;
 
 /**
  * Bio server socket最终版本，你还能想到改进point吗？？
+ * 阻塞的通信，在接收连接、读写数据时
  */
 public final class FinalBioSocketServer {
 
@@ -61,6 +62,7 @@ public final class FinalBioSocketServer {
 
     /**
      * 生成线程池，用于处理客户端连接
+     * 关于线程池：在核心线程为满工作状态时，是不会往调度队列里面排队的
      */
     private static ExecutorService initService() {
         int poolSize = Runtime.getRuntime().availableProcessors() * 2;
