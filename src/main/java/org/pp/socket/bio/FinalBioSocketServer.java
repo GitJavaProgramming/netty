@@ -6,12 +6,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static org.pp.socket.bio.CommandConstant.SERVER_PORT;
+
 /**
  * Bio server socket最终版本，你还能想到改进point吗？？
  */
 public final class FinalBioSocketServer {
-
-    private static final int PORT = 8000;
 
     private static ExecutorService service = null;
 
@@ -27,7 +27,7 @@ public final class FinalBioSocketServer {
             System.out.println("Default ReceiveBufferSize Value : " + serverSocket.getReceiveBufferSize());
 
             option(serverSocket);
-            bindSocketAddress(serverSocket, PORT);
+            bindSocketAddress(serverSocket, SERVER_PORT);
 
             while (true) {
                 Socket socket = serverSocket.accept(); // 阻塞等待客户端连接，连接请求队列为空则会一直等待，当有客户端连接时才返回。
@@ -77,6 +77,8 @@ public final class FinalBioSocketServer {
      */
     public static void handleClientConnection2(Socket socket) {
         // Runtime.getRuntime().availableProcessors() 返回可用cpu个数
+        // 计算型/io型 计算型让cpu计算单元尽量占用，所以应该减少进程切换
+        // io型进程切换，所以使用2倍cpu核数
         int poolSize = Runtime.getRuntime().availableProcessors() * 2;
         ScheduledExecutorService service = Executors.newScheduledThreadPool(poolSize);
         service.execute(new ClientHandler(socket));

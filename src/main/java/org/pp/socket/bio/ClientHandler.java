@@ -48,6 +48,7 @@ class ClientHandler implements Runnable {
         } catch (IOException e) {
             // java.net.SocketException: Connection reset
             // an I/O error has occurred.
+            // 这里可以断线重连吗  检测连接状态，重连？？
             System.out.println("an I/O error has occurred 断开连接......");
             e.printStackTrace();
         }

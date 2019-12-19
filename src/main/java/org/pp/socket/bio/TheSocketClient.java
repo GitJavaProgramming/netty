@@ -9,13 +9,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import static org.pp.socket.bio.CommandConstant.SERVER_HOST;
+import static org.pp.socket.bio.CommandConstant.SERVER_PORT;
+
 /**
  * 表示连接的客户端
  */
 public class TheSocketClient {
-
-    private static final String SERVER_HOST = "";
-    private static final int SERVER_PORT = 8000;
 
     //    private static final String CLOSE = "SHUTDOWN";
     private static /*volatile*/ boolean STOP_AND_CLOSE = false;
@@ -87,10 +87,21 @@ public class TheSocketClient {
         // java.net.UnknownHostException
         // java.net.SocketException
         // 其他异常请分析源码...
-        socket.connect(new InetSocketAddress("127.0.0.1", 8000));
+        socket.connect(new InetSocketAddress(SERVER_HOST, SERVER_PORT));
     }
 
     private static void option(Socket socket) throws IOException {
         socket.setReuseAddress(true);
+        // 使用Nagle算法（去查查吧！）
+        // Nagle的算法通常会在TCP程序里添加两行代码，在未确认数据发送的时候让发送器把数据送到缓存里。任何数据随后继续直到得到明显的数据确认或者直到攒到了一定数量的数据了再发包。
+        socket.setTcpNoDelay(true);
+        // socket close时，是否立即关闭底层socket，可以指定最大停留时间（秒为单位）
+        socket.setSoLinger(true, 1);
+        // 长时间处于空闲的socket是否自动关闭它
+        socket.setKeepAlive(false);
+        // 设置此套接字的性能偏好
+        // 分别指示短连接时间、低延迟和高带宽的相对重要性
+        // socket连接之后，此选项无效
+        socket.setPerformancePreferences(1, 1, 1);
     }
 }
