@@ -19,16 +19,23 @@ public class TimerSocketServer {
 
             serverSocket.bind(new InetSocketAddress(8000));
 
-            serverSocket.accept(); // 阻塞等待客户端连接，连接请求队列为空则会一直等待。
-            serverSocket.close();
+            serverSocket.accept(); // 阻塞等待客户端连接，连接请求队列为空则会一直等待，当有客户端连接时才返回。
 
-            hook(); // 虚拟机钩子未执行  main方法没有执行到这里,超时抛出异常跳出
+//            hook(); // 虚拟机钩子未执行  main方法没有执行到这里 accept异常处理
 
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                serverSocket.close();  // 检测到异常时首先关闭socket
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();  // 打印异常栈
         }
     }
 
+    /**
+     * 配置ServerSocket （TCP Connection） 选项
+     */
     public static void option(ServerSocket serverSocket) throws SocketException {
 
         // 启用或禁用SocketOptions#SO_TIMEOUT SO_TIMEOUT
@@ -44,6 +51,7 @@ public class TimerSocketServer {
         // SocketOptions#SO_RCVBUF
         serverSocket.setReceiveBufferSize(1024); // 设置接收数据缓冲区大小
 
+//        serverSocket.setPerformancePreferences();
     }
 
     public static void hook() {
