@@ -1,4 +1,4 @@
-package org.pp.socket.netty;
+package org.pp.socket.netty.simpleDemo;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

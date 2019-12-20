@@ -1,4 +1,4 @@
-package org.pp.socket.netty;
+package org.pp.socket.netty.simpleDemo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -22,7 +22,6 @@ public class TcpServer {
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1)
                 .childHandler(new ChildChannelInitializer());
-
         try {
             ChannelFuture future = b.bind(port).sync();
             System.out.println("server started in port - " + SERVER_PORT);
