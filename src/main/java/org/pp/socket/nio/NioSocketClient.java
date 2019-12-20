@@ -44,8 +44,8 @@ public class NioSocketClient {
         if (channel.isConnectionPending()) {
             channel.finishConnect();
         }
-        channel.write(ByteBuffer.wrap("向服务端发送了一条信息".getBytes()));
-        channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        channel.write(ByteBuffer.wrap("Command : Connected".getBytes()));
+        channel.register(selector, SelectionKey.OP_READ);
     }
 
     public static void read(SelectionKey key) throws IOException {
@@ -55,6 +55,20 @@ public class NioSocketClient {
         channel.read(buffer);
         byte[] data = buffer.array();
         String msg = new String(data).trim();
-        System.out.println("服务端响应信息：" + msg);
+        /**
+         *  出现粘包问题
+         *  这里要自己处理怎么从Buffer中读取一行或者按自定义规则读取
+         * 可能的结果之一：
+         * 54
+         * Server Echo : welcomeServer Echo : Command : Connected
+         * 可能的结果之一：
+         * 21
+         * Server Echo : welcome
+         * 33
+         * Server Echo : Command : Connected
+         *
+         */
+        System.out.println(msg.length());
+        System.out.println(msg);
     }
 }

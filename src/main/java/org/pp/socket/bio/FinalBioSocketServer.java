@@ -22,7 +22,16 @@ public final class FinalBioSocketServer {
 
         initService();
 
-        try (ServerSocket serverSocket = new ServerSocket(/*PORT 指定port查看默认选项信息*/)) {
+        initServer(service);
+    }
+
+    /**
+     * 阻塞通信 在接收连接、读写数据时
+     */
+    public static void initServer(ExecutorService service) {
+        try (/*ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();ServerSocket serverSocket = serverSocketChannel.socket();*/
+                ServerSocket serverSocket = new ServerSocket(/*PORT 指定port查看默认选项信息*/)) {
+//            serverSocket.getChannel();  // 可以获得channel
             // SO_REUSEADDR、SO_RCVBUF跟具体平台有关
             System.out.println("Default ReuseAddress Value : " + serverSocket.getReuseAddress());
             System.out.println("Default ReceiveBufferSize Value : " + serverSocket.getReceiveBufferSize());

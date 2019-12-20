@@ -13,13 +13,13 @@ java.nio
             flip：翻转此缓冲区。 将限制设置为当前位置，然后将该位置设置为零。 如果定义了标记，则将其丢弃。
                 在执行一系列通道读取或放置操作之后，调用此方法以准备一系列通道写入或相对get操作。
             rewind：倒带此缓冲区。 将位置设置为零并将标记丢弃。假定已正确设置了限制，请在执行一系列通道写入或获取操作之前调用此方法。
-    Buffer是抽象类，有众多实现类，最基本的字节缓冲区ByteBuffer。
+    Buffer是抽象类，有众多直接子类，它们都是抽象类，最基本的字节缓冲区ByteBuffer、CharBuffer。
         使用静态工厂方法创建实例：
             Allocates a new byte buffer.
             The new buffer's position will be zero, its limit will be its capacity,
             its mark will be undefined, and each of its elements will be initialized to zero.
             // 分配缓冲区，新缓冲区的位置将为零，其极限将是其容量，其标记将是未定义的，并且其每个元素都将初始化为零。
-            ByteBuffer.allocate(int capacity);
+            ByteBuffer.allocate(int capacity);  // Heap
             ByteBuffer.allocateDirect(int capacity);
 
     字符编码Charset

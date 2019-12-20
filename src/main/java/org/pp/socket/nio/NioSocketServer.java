@@ -14,6 +14,8 @@ import static org.pp.socket.CommandConstant.SERVER_PORT;
 
 /**
  * 非阻塞的服务器
+ * 现在是非阻塞通信，在接收连接和读写数据时都不阻塞，但是在选择器轮询时，没有就绪事件仍然会阻塞
+ * 比较：
  */
 public class NioSocketServer {
 
@@ -65,19 +67,20 @@ public class NioSocketServer {
         channel.read(buffer);  // 通道读数据入Buffer
         byte[] data = buffer.array();
         String msg = new String(data).trim();
-        System.out.println("服务端收到信息：" + msg);
+        System.out.println("receive：" + msg);
 
-        ByteBuffer outBuffer = ByteBuffer.wrap(msg.getBytes()); // 数据写入缓冲区
+        ByteBuffer outBuffer = ByteBuffer.wrap(("Server Echo : " + msg).getBytes()); // 数据写入缓冲区
         channel.write(outBuffer); // Buffer写入channel
     }
 
     public static void processAccept(SelectionKey key, Selector selector) throws IOException {
         // 为什么你知道强制转换为ServerSocketChannel，因为前面注册的时候你将它注册到这个selector并绑定了accept事件
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-        SocketChannel channel = serverSocketChannel.accept();
+        // 默认阻塞模式，需要配置非阻塞才能使用Buffer，否则报异常 java.nio.channels.IllegalBlockingModeException
+        SocketChannel channel = serverSocketChannel.accept(); // 这个channel将用于后续的处理
         channel.configureBlocking(false);
         //在这里可以给客户端发送信息哦
-        channel.write(ByteBuffer.wrap("向客户端发送了一条信息".getBytes()));
+        channel.write(ByteBuffer.wrap("Server Echo : welcome".getBytes()));
         channel.register(selector, SelectionKey.OP_READ);
     }
 
