@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static org.pp.socket.bio.CommandConstant.SERVER_PORT;
+import static org.pp.socket.CommandConstant.SERVER_PORT;
 
 /**
  * Bio server socket最终版本，你还能想到改进point吗？？

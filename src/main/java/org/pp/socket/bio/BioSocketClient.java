@@ -1,5 +1,7 @@
 package org.pp.socket.bio;
 
+import org.pp.socket.CommandConstant;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,14 +11,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import static org.pp.socket.bio.CommandConstant.SERVER_HOST;
-import static org.pp.socket.bio.CommandConstant.SERVER_PORT;
+import static org.pp.socket.CommandConstant.SERVER_HOST;
+import static org.pp.socket.CommandConstant.SERVER_PORT;
 
 /**
  * 表示连接的客户端
  * 阻塞通信，在连接服务器、读写数据、soLinger选项关闭时
  */
-public class TheSocketClient {
+public class BioSocketClient {
 
     //    private static final String CLOSE = "SHUTDOWN";
     private static /*volatile*/ boolean STOP_AND_CLOSE = false;
