@@ -12,6 +12,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+//        ByteBufAllocator allocator = ctx.alloc();
         byte[] bytes = "welcome".getBytes();
 //        ByteBufAllocator.DEFAULT.buffer();
         ByteBuf msg = Unpooled.buffer(bytes.length);
