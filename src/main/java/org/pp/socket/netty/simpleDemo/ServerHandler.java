@@ -1,6 +1,7 @@
 package org.pp.socket.netty.simpleDemo;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -12,6 +13,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         byte[] bytes = "welcome".getBytes();
+//        ByteBufAllocator.DEFAULT.buffer();
         ByteBuf msg = Unpooled.buffer(bytes.length);
         msg.writeBytes(bytes);
         ctx.writeAndFlush(msg);

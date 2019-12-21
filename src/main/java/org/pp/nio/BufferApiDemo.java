@@ -44,9 +44,14 @@ public class BufferApiDemo {
         System.out.println(Arrays.toString(bytes));
 
         // 查阅Java几种引用的强弱比较
-        WeakReference<ByteBuffer> weakReference = new WeakReference(buffer);
+        WeakReference/*<ByteBuffer>*/ weakReference = new WeakReference(buffer);
         weakReference.clear();
-//        buffer.rewind();
+//        buffer.rewind();  //  写数据
+        /*public final Buffer rewind() {
+            position = 0;
+            mark = -1;
+            return this;
+        }*/
 
     }
 }

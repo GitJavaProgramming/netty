@@ -22,6 +22,8 @@ java.nio
             ByteBuffer.allocate(int capacity);  // Heap
             ByteBuffer.allocateDirect(int capacity);
 
+    最后一点也是比较重要一点：标准IO、IO效率与缓冲区 详细见Unix环境高级编程 ch03-文件IO/IO效率、ch05-标准IO/缓冲
+
     字符编码Charset
     编码：字符串转换为字节序列，编码需要指定字符集（如GBK，unicode）。
 
