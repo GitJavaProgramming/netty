@@ -34,12 +34,13 @@ io、nio、序列化、网络编程、rmi等等
 ![EventLoop继承体系图](/org/pp/socket/netty/核心组件/EventExecutorGroup.png "这就是你想看的图")   
 
     nio与netty对比：
+    
     Buffer ByteBuf
     
     nio Channel SelectionKey  Selector
     netty 
-        Channel（AbstractNioChannel、AbstractChannel） --- regist key
-        EventLoop       --- manage Selector
+        Channel系列（AbstractNioChannel、AbstractChannel） --- regist key
+        EventLoop体系       --- manage Selector
         
         ChannelHandler ChannelPipeline 事件驱动 监听器模式 Listener Event fireAction
         
