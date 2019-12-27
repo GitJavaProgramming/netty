@@ -15,7 +15,7 @@ Channel注册到EventLoop的多路复用器上，用于处理IO事件，通过ev
         pipeline = newChannelPipeline();  // 自身实现
     }
 
-Unsafe接口时Channel内部的一个接口，它是一个辅助接口，用于实际的数据传输，并须从I/O线程操作，以下几个方法除外：
+Unsafe接口时Channel内部的一个接口，它是一个辅助接口，用于实际的数据传输，这些方法并须从I/O线程操作，以下几个方法除外：
     * <ul>
     *   <li>{@link #localAddress()}</li>
     *   <li>{@link #remoteAddress()}</li>
