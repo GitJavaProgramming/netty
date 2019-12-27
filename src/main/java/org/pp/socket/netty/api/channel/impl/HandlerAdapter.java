@@ -1,4 +1,4 @@
-package org.pp.socket.netty.api.channel;
+package org.pp.socket.netty.api.channel.impl;
 
 public abstract class HandlerAdapter implements Handler {
 

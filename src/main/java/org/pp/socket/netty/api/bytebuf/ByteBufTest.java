@@ -1,4 +1,4 @@
-package org.pp.socket.netty.api;
+package org.pp.socket.netty.api.bytebuf;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -14,11 +14,11 @@ import java.util.Arrays;
  * 支持对象池管理：维护Recycler回调引用
  * 引用计数自动管理内存：实现ReferenceCounted接口
  * 自动扩容的（AbstractByteBufAllocator中指定最大默认容量值）
- * 参考:
- * ByteBufAllocator.DEFAULT.buffer();
- * Unpooled.buffer();
+ *   参考:
+ *   ByteBufAllocator.DEFAULT.buffer();
+ *   Unpooled.buffer();
  * <p>
- * UML 参考{@link ./AbstractByteBuf.png}
+ * UML 参考{@link ./ByteBuf继承体系图.png}
  */
 public class ByteBufTest {
     public static void main(String[] args) {

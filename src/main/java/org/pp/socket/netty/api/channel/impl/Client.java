@@ -1,4 +1,4 @@
-package org.pp.socket.netty.api.channel;
+package org.pp.socket.netty.api.channel.impl;
 
 public class Client {
     public static void main(String[] args) {
