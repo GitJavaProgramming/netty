@@ -26,4 +26,58 @@ cat /proc/sys/vm/dirty_ratio查看这个值，默认是20（单位是百分比�
 系统调用接口是进入内核的入口。由于引发系统调用的实际机制是非常依赖与机器的，而且必须用汇编语言代码表达，所以，通过提供过程库使C程序中
 能够使用系统调用。
 
+几种模型去查看Unix网络编程 和APUE一套的大师出手（在） -- ch06 IO复用--6.2 I/O模型
+UNIX 5种IO模型： 阻塞I/O、非阻塞I/O、I/O复用、信号驱动I/O和异步I/O。
+
+关于I/O阻塞和线程阻塞
+I/O阻塞 在等待内核 占用CPU
+线程阻塞通常是指一个线程在执行过程中暂停，以等待某个条件的触发。
+Java中的线程状态 hotspot/vm/classfile/javaClasses.hpp中  class java_lang_Thread : AllStatic
+enum JavaThreadState {
+  _thread_uninitialized     =  0, // should never happen (missing initialization)
+  _thread_new               =  2, // just starting up, i.e., in process of being initialized
+  _thread_new_trans         =  3, // corresponding transition state (not used, included for completness)
+  _thread_in_native         =  4, // running in native code
+  _thread_in_native_trans   =  5, // corresponding transition state
+  _thread_in_vm             =  6, // running in VM
+  _thread_in_vm_trans       =  7, // corresponding transition state
+  _thread_in_Java           =  8, // running in Java or in stub code
+  _thread_in_Java_trans     =  9, // corresponding transition state (not used, included for completness)
+  _thread_blocked           = 10, // blocked in vm
+  _thread_blocked_trans     = 11, // corresponding transition state
+  _thread_max_state         = 12  // maximum thread state+1 - used for statistics allocation
+};
+
+  // Java Thread Status for JVMTI and M&M use.
+  // This thread status info is saved in threadStatus field of
+  // java.lang.Thread java class.
+  enum ThreadStatus {
+    NEW                      = 0,
+    RUNNABLE                 = JVMTI_THREAD_STATE_ALIVE +          // runnable / running
+                               JVMTI_THREAD_STATE_RUNNABLE,
+    SLEEPING                 = JVMTI_THREAD_STATE_ALIVE +          // Thread.sleep()
+                               JVMTI_THREAD_STATE_WAITING +
+                               JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT +
+                               JVMTI_THREAD_STATE_SLEEPING,
+    IN_OBJECT_WAIT           = JVMTI_THREAD_STATE_ALIVE +          // Object.wait()
+                               JVMTI_THREAD_STATE_WAITING +
+                               JVMTI_THREAD_STATE_WAITING_INDEFINITELY +
+                               JVMTI_THREAD_STATE_IN_OBJECT_WAIT,
+    IN_OBJECT_WAIT_TIMED     = JVMTI_THREAD_STATE_ALIVE +          // Object.wait(long)
+                               JVMTI_THREAD_STATE_WAITING +
+                               JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT +
+                               JVMTI_THREAD_STATE_IN_OBJECT_WAIT,
+    PARKED                   = JVMTI_THREAD_STATE_ALIVE +          // LockSupport.park()
+                               JVMTI_THREAD_STATE_WAITING +
+                               JVMTI_THREAD_STATE_WAITING_INDEFINITELY +
+                               JVMTI_THREAD_STATE_PARKED,
+    PARKED_TIMED             = JVMTI_THREAD_STATE_ALIVE +          // LockSupport.park(long)
+                               JVMTI_THREAD_STATE_WAITING +
+                               JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT +
+                               JVMTI_THREAD_STATE_PARKED,
+    BLOCKED_ON_MONITOR_ENTER = JVMTI_THREAD_STATE_ALIVE +          // (re-)entering a synchronization block
+                               JVMTI_THREAD_STATE_BLOCKED_ON_MONITOR_ENTER,
+    TERMINATED               = JVMTI_THREAD_STATE_TERMINATED
+  };
+
 

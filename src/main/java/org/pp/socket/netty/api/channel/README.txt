@@ -26,4 +26,42 @@ Unsafe接口时Channel内部的一个接口，它是一个辅助接口，用于�
     * </ul>
 
 FAQ. 这些例外方法是无法从I/O线程操作中拆分还是没有必要？？这里的IO线程指EventLoop（线程池）中的线程
+------------------------------------------------------------------------------------------------------------------------
+ChannelHandler接口
+    处理I/O事件或拦截I/O操作，然后将其转发到其ChannelPipeline中的下一个处理程序。
+
+ChannelPipeline接口
+    元素为java.util.Map.Entry<String, ChannelHandler>的双端队列（类似LinkedList）
+    继承了ChannelInboundInvoker, ChannelOutboundInvoker
+public interface ChannelPipeline
+        extends ChannelInboundInvoker, ChannelOutboundInvoker, Iterable<Entry<String, ChannelHandler>>
+
+ChannelHandlerContext接口
+    从类图可以看到ChannelInboundInvoker, ChannelOutboundInvoker依赖ChannelHandlerContext
+public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvoker, ChannelOutboundInvoker
+ChannelInboundInvoker--Channel入站绑定调用抽象  看UML主要用于事件注册（就看你在什么上注册Pipeline还是HandlerContext上注册）
+    具体什么必要条件、什么时候触发留到启动流程分析
+ChannelOutboundInvoker--出站抽象  方法基本返回异步接口，这里就可以看出（read\write\bind\connect等）操作是异步的。
+
+ChannelPipeline与ChannelHandlerContext是互相依赖的，它们看起来结构很相似
+ChannelHandlerContext用于管理Handler和pipeline。通过唯一抽象类实现就可以看到：
+    AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, EventExecutor executor,
+                                  String name, Class<? extends ChannelHandler> handlerClass) {
+        this.name = ObjectUtil.checkNotNull(name, "name");
+        this.pipeline = pipeline;
+        this.executor = executor;
+        this.executionMask = mask(handlerClass);
+        // Its ordered if its driven by the EventLoop or the given Executor is an instanceof OrderedEventExecutor.
+        ordered = executor == null || executor instanceof OrderedEventExecutor;
+    }
+
+
+------------------------------------------------------------------------------------------------------------------------
+ChannelInitializer---以Channel接口为泛型上限，依赖Channel，同时继承ChannelInboundHandlerAdapter，是一个特殊的ChannelHandler。
+它为注册到EventLoop的Channel初始化
+@Sharable
+public abstract class ChannelInitializer<C extends Channel> extends ChannelInboundHandlerAdapter
+
+Netty线程模型
+
 
