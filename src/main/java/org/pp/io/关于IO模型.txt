@@ -28,6 +28,11 @@ cat /proc/sys/vm/dirty_ratio查看这个值，默认是20（单位是百分比�
 
 几种模型去查看Unix网络编程 和APUE一套的大师出手（在） -- ch06 IO复用--6.2 I/O模型
 UNIX 5种IO模型： 阻塞I/O、非阻塞I/O、I/O复用、信号驱动I/O和异步I/O。
+内核I/O
+系统调用
+    epoll如何高效 不看内核就看这篇
+        https://www.cnblogs.com/tqyysm/p/9782631.html
+        http://www.bubuko.com/infodetail-589680.html
 
 关于I/O阻塞和线程阻塞
 I/O阻塞 在等待内核 占用CPU

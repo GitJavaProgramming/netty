@@ -14,6 +14,10 @@ Channel注册到EventLoop的多路复用器上，用于处理IO事件，通过ev
         unsafe = newUnsafe(); // 子类实现NioServerSocketChannel这边是继承AbstractNioMessageChannel实现创建Unsafe（返回AbstractNioUnsafe类型）
         pipeline = newChannelPipeline();  // 自身实现
     }
+protected DefaultChannelPipeline newChannelPipeline() {
+    return new DefaultChannelPipeline(this); // 这里通过构造注入，将channel与pipeline关联
+}
+
 
 Unsafe接口时Channel内部的一个接口，它是一个辅助接口，用于实际的数据传输，这些方法并须从I/O线程操作，以下几个方法除外：
     * <ul>
@@ -62,6 +66,7 @@ ChannelInitializer---以Channel接口为泛型上限，依赖Channel，同时继
 @Sharable
 public abstract class ChannelInitializer<C extends Channel> extends ChannelInboundHandlerAdapter
 
-Netty线程模型
+ChannelOutBoundInvoker的方法返回值基本都是ChannelFuture接口，它是一个异步接口。
+查看AbstractChannelHandlerContext中的方法，事件操作都是newPromise() 这里可以看出异步，事件驱动。
 
 
