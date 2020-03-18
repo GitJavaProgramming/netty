@@ -3,6 +3,10 @@ io、nio、网络编程到netty源码分析
 
 io、nio、序列化、网络编程、rmi等等
 
+    netty的应用参考我的其他库，主要包括：心跳，防火墙，消息处理器的注册，protobuf协议、消息的加密解密，封包、拆包，数据缓存等等
+    https://github.com/GitJavaProgramming/nettyProject
+    https://github.com/GitJavaProgramming/ys
+
 ## 分享一波图，代码在项目中，都是干货！  
 
     java
@@ -25,11 +29,11 @@ io、nio、序列化、网络编程、rmi等等
         └─netty
 
 ##### ByteBuf体系图
-![ByteBuf体系图](/org/pp/socket/netty/api/bytebuf/AbstractByteBuf.png "这就是你想看的图")  
+![ByteBuf体系图](/org/pp/socket/netty/api/bytebuf/ByteBuf继承体系图.png "这就是你想看的图")  
 ##### Channel各组件关系图
-![Channel各组件关系图](/org/pp/socket/netty/api/channel/Channel组件关系图.png "这就是你想看的图")  
+![Channel各组件关系图](/org/pp/socket/netty/api/channel/maps/association/Channel组件关系图.png "这就是你想看的图")  
 ##### Channel继承体系图
-![Channel继承体系图](/org/pp/socket/netty/核心组件/Channel继承体系图.png "这就是你想看的图")  
+![Channel继承体系图](/org/pp/socket/netty/api/channel/maps/self/Channel继承体系图.png "这就是你想看的图")  
 ##### EventLoop继承体系图
 ![EventLoop继承体系图](/src/main/java/org/pp/socket/netty/核心组件/EventExecutorGroup.png "这就是你想看的图")   
 
