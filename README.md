@@ -29,11 +29,11 @@ io、nio、序列化、网络编程、rmi等等
         └─netty
 
 ##### ByteBuf体系图
-![ByteBuf体系图](/org/pp/socket/netty/api/bytebuf/ByteBuf继承体系图.png "这就是你想看的图")  
+![ByteBuf体系图](/src/main/java/org/pp/socket/netty/api/bytebuf/ByteBuf继承体系图.png "这就是你想看的图")  
 ##### Channel各组件关系图
-![Channel各组件关系图](/org/pp/socket/netty/api/channel/maps/association/Channel组件关系图.png "这就是你想看的图")  
+![Channel各组件关系图](/src/main/java/org/pp/socket/netty/api/channel/maps/association/Channel组件关系图.png "这就是你想看的图")  
 ##### Channel继承体系图
-![Channel继承体系图](/org/pp/socket/netty/api/channel/maps/self/Channel继承体系图.png "这就是你想看的图")  
+![Channel继承体系图](/src/main/java/org/pp/socket/netty/api/channel/maps/self/Channel继承体系图.png "这就是你想看的图")  
 ##### EventLoop继承体系图
 ![EventLoop继承体系图](/src/main/java/org/pp/socket/netty/核心组件/EventExecutorGroup.png "这就是你想看的图")   
 
