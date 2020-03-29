@@ -16,7 +16,7 @@ Config config = Config.fromYAML(new File("config-file.yaml")); // 从文件加�
 // Redisson代表集群管理器实例，一个集群生成一个统一的RedissonClient。
 RedissonClient redisson = Redisson.create(config); // 默认setAddress("redis://127.0.0.1:6379");
 2. 获取Redisson锁 每次get都new一个锁 RedissonLock实现了RedissonExpirable锁持有时间有限会过期的
-// FAQ. 会不会在同一个redis服务器上两次加锁执行两次相同的命令，造成脏数据？？如何保证只在一个redis上只加一次锁？？
+// FAQ. 会不会在同一个redis集群上获得两把锁执行两次相同的命令，造成脏数据，getLock会不会有并发问题？？
 public RLock getLock(String name) {
     return new RedissonLock(connectionManager.getCommandExecutor(), name);
 }
