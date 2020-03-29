@@ -67,7 +67,5 @@ private <T> RFuture<Long> tryAcquireAsync(long leaseTime, TimeUnit unit, long th
 ```
 4. 释放锁
 
-FAQ回答： getLock在分布式事务中，由事务保证隔离性，由此引出分布式事务的解决方案  
-
 # 参考资料
 * https://www.jianshu.com/p/a8b3473f9c24
