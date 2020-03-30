@@ -56,15 +56,33 @@
      共识，组管理和状态协议将由服务实现，因此应用程序不需要自己实现它们。
      
      FAQ. zookeeper(服务)的实现方式？？
+     zookeeper使用Atomic Broadcast(ZAB, ZooKeeper原子消息广播协议)协议作为其数据一致性的核心算法。ZAB协议不像Paxos算法那样
+     是一种通用的分布式一致性算法，它是一种特别为zookeeper设计的崩溃可恢复的原子消息广播算法。基于该协议，zookeeper实现了一种
+     主备模式的系统架构来保持集群中副本之间数据的一致性。
+# Paxos算法
+    Paxos算法-wiki描述
+    Paxos是一个共识（consensus）算法。首先将议员的角色分为 proposers，acceptors，和 learners（允许身兼数职）。
+    proposers 提出提案，提案信息包括提案编号和提议的 value；acceptor 收到提案后可以接受（accept）提案，若提案获得
+    多数派（majority）的 acceptors 的接受，则称该提案被批准（chosen）；learners 只能“学习”被批准的提案。
+    
+    为什么一定能达成共识（找到批准提案），这里摘取wiki中已被数学归纳证明一段话：
+        P2c：如果一个编号为 n 的提案具有 value v，那么存在一个多数派，要么他们中所有人都没有接受（accept）编号小于 n 
+        的任何提案，要么他们已经接受（accept）的所有编号小于 n 的提案中编号最大的那个提案具有 value v。
+        
+    FAQ. 每个提案需要有不同的编号，且编号间要存在全序关系，全序关系具有传递性。这个是必要前提吗，如果编号间不具有全序关系就不能
+    确保达成共识？？
+    
+# ZAB协议
     
       
 # 参考资料
 * 分布式系统：概念与设计 原书第5版
-* 系统编程  分布式应用的设计与开发
+* 从Paxos到Zookeeper--分布式一致性原理与实践
 * https://zookeeper.apache.org/
 * https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index
-* 从Paxos到Zookeeper--分布式一致性原理与实践
+* 系统编程  分布式应用的设计与开发
 * ZooKeeper分布式过程协同技术详解
+* https://zh.wikipedia.org/zh-hans/Paxos算法
 
 
 
