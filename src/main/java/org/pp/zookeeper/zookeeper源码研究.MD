@@ -73,7 +73,36 @@
     确保达成共识？？
     
 # ZAB协议
-    
+    ZAB协议运行过程中，所有的客户端更新都发往Leader，Leader写入本地日志后再复制到所有的Follower节点。
+    一旦Leader节点故障无法工作，ZAB协议能够自动从Follower节点中重新选择出一个合适的替代者，这个过程被称为选主，选主也是
+    ZAB协议中最为重要和复杂的过程。
+# zookeeper的java客户端
+    ZooKeeper字段和属性
+        字段：类数据成员，一个数据项，一般私有，java反射破坏了私有性，字段的概念来源于关系型数据库 表--记录--字段
+            protected final ClientCnxn cnxn;  // socket连接，多次封装后的client
+            protected final HostProvider hostProvider;
+            protected final ZKWatchManager watchManager; // zookeeper连接状态或节点事件监控程序管理
+        属性：发布的字段，具有数据操作权限，类可以根据本身数据的抽象情况决定是否将访问属性抽象为成员变量（字段）
+            public ZKClientConfig getClientConfig() // zookeeper字段（数据项，需要设置值，查看构造方法），只读属性
+            public List<String> getEphemerals() // 同步获取此会话创建的所有临时节点。   
+            由字段ClientCnxn提供的只读属性
+                public ZooKeeperSaslClient getSaslClient()
+                public States getState()
+                public int getSessionTimeout()
+                public long getSessionId()
+                public byte[] getSessionPasswd()
+    ZooKeeper构造方法 有多个重载构造，其中一个如下
+        public ZooKeeper(
+                String connectString,
+                int sessionTimeout,
+                Watcher watcher,
+                boolean canBeReadOnly,
+                HostProvider aHostProvider,
+                ZKClientConfig clientConfig)
+        各参数具体含义参考从Paxos到Zookeeper 表5-2
+# zookeeper服务端 
+
+# 应用场景与如何实现       
       
 # 参考资料
 * 分布式系统：概念与设计 原书第5版
@@ -83,6 +112,36 @@
 * 系统编程  分布式应用的设计与开发
 * ZooKeeper分布式过程协同技术详解
 * https://zh.wikipedia.org/zh-hans/Paxos算法
+* https://zhuanlan.zhihu.com/p/27335748
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
