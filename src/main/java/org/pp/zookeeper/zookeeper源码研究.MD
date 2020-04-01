@@ -101,7 +101,25 @@
                 ZKClientConfig clientConfig)
         各参数具体含义参考从Paxos到Zookeeper 表5-2
 # zookeeper服务端 
-
+    源码环境搭建略
+    
+    先假定你对zookeeper一无所知，从main方法开始，来看java怎么实现一个zookeeper服务。
+    
+    服务端主线程入口：QuorumPeerMain
+        1. 解析命令行参数
+            读取并解析进程配置文件，zookeeper不像spring对资源的加载和解析并没有做过多的封装，使用QuorumPeerConfig
+        2. 启动清理任务线程
+            由于配置文件会指定一些数据文件目录，在启动进程时需要尽心清理，确保进程启动唯一占用这些文件不至产生脏数据
+        3. 判断zookeeper的运行模式：单机、分布式
+```            
+            if (args.length == 1 && config.isDistributed()) {
+               runFromConfig(config);
+            } else {
+               // there is only server in the quorum -- run as standalone
+               ZooKeeperServerMain.main(args); // 静态方法调用
+            }
+```
+        
 # 应用场景与如何实现       
       
 # 参考资料
