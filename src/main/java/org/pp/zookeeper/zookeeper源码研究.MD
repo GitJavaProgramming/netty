@@ -131,7 +131,7 @@
         
         FAQ. 如果所有客户端连接的都是非leader服务器，可能吗？？此时如何进行一致性协调？？
         
-        流程
+        1. 第一步
             解析配置文件、创建两个NIOServerCnxnFactory并将它们作为属性注入QuorumPeer
                 quorumPeer.setCnxnFactory(cnxnFactory);
                 quorumPeer.setSecureCnxnFactory(secureCnxnFactory);
@@ -143,7 +143,6 @@
                 仲裁是一个法律术语，是指由双方当事人协议将争议提交（具有公认地位的）第三者，由该第三者对争议的是非曲直进行
                 评判并作出裁决的一种解决争议的方法。
             quorumPeer.start(); 开始仲裁 start()方法如下：这里先只关注Leader election
-```      
             @Override
             public synchronized void start() {
                 // 选举前准备工作：数据（）、socket连接... 
@@ -170,7 +169,62 @@
                 // ...
             }
             
-```                 
+        集群配置
+            server.X=A:B:C 其中X是一个数字, 表示这是第几号server. A是该server所在的IP地址. 
+            B配置该server和集群中的leader交换消息所使用的端口. C配置选举leader时所使用的端口.
+            
+        2. 数据封装、通信封装(作为公共模块？？不过代码中又与FastLeaderElection紧密耦合，FastLeaderElection设计功能不单一？)
+            
+            数据封装：ToSend 只有数据，没有行为方法，其中一些数据由Vote提供，服务器自身Vote作为QuorumPeer的属性被管理 参考UML
+            
+            FastLeaderElection实例化，初始化数据成员，从构造方法看出它聚合了QuorumPeer, QuorumCnxManager同时结合自身数据
+            提供更多的功能。其中比较重要的成员（用于socket的数据收发）：
+                sendqueue = new LinkedBlockingQueue<ToSend>();
+                recvqueue = new LinkedBlockingQueue<Notification>();
+                this.messenger = new Messenger(manager);
+            FastLeaderElection start() 实际调用内部类Messenger start()
+                void start() {
+                    this.wsThread.start();
+                    this.wrThread.start();
+                }
+            Messenger会开启两个后台线程执行两个任务WorkerSender、WorkerReceiver，这两个任务组合QuorumCnxManager因为需要
+            QuorumCnxManager进行数据收发统一管理，从UML Messenger中可以看到。
+            1. WorkerSender从sendqueue.poll出一个ToSend并将ToSend转换成NIO ByteBuffer然后交给QuorumCnxManager发送；
+               WorkerReceiver从QuorumCnxManager.recvQueue poll出Message;向FastLeaderElection.recvqueue中放Notification
+                   if (self.getPeerState() == QuorumPeer.ServerState.LOOKING) {
+                        recvqueue.offer(n);
+                   }
+            2. QuorumCnxManager.toSend()收到ByteBuffer会进行逻辑处理，并进行socket连接，阻塞等待连接建立，最后在
+               startConnection(Socket sock, Long sid)方法处进行数据发送.
+               数据收发用到流：DataOutputStream、DataInputStream、BufferedOutputStream
+               
+               QuorumCnxManager主要功能：维护映射，用于管理集群中每个服务器已经建立的连接和发送的的数据buffer队列。
+                    final ConcurrentHashMap<Long, SendWorker> senderWorkerMap;
+                    final ConcurrentHashMap<Long, BlockingQueue<ByteBuffer>> queueSendMap; // 发送给每个服务器的缓冲队列
+                    public final BlockingQueue<Message> recvQueue;  // 本地接收队列
+            
+            注意：此时ToSend是还没有构造的，ToSend的构造会在QuorumPeer线程正式运行run()方法执行时调用，此时线程QuorumPeer
+            尚未真正启动
+         
+        3. 选举leader
+            在线程启动前数据和通信的封装完成之后，线程start启动会执行run() 进行真正的leader选举逻辑: QuorumPeer.run()
+            
+            线程逻辑首先会初始化一些MBean对java对象进行内存管理，这部分内容参考JMX规范，在spring、tomcat中都由运用。
+            
+            主循环
+            QuorumPeer中默认的state private ServerState state = ServerState.LOOKING;  // 对象构造时字段初始值
+            case LOOKING、OBSERVING、FOLLOWING、LEADING:
+            
+            LOOKING
+                Read Only Mode Server : (Java system property: readonlymode.enabled) New in 3.4.0
+                设置当前选票
+                setCurrentVote(makeLEStrategy().lookForLeader()); // 这里可能是想使用策略模式对应选举算法不同实现
+                接口Election当前只有FastLeaderElection一个子类
+            
+    zookeeper的配置文件参数配置：
+        https://zookeeper.apache.org/doc/r3.6.0/zookeeperAdmin.html#sc_configuration
+               
+                 
 # 应用场景与如何实现       
       
 # 参考资料
