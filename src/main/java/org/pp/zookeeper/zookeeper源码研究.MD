@@ -173,7 +173,7 @@
             server.X=A:B:C 其中X是一个数字, 表示这是第几号server. A是该server所在的IP地址. 
             B配置该server和集群中的leader交换消息所使用的端口. C配置选举leader时所使用的端口.
             
-        2. 数据封装、通信封装(作为公共模块？？不过代码中又与FastLeaderElection紧密耦合，FastLeaderElection设计功能不单一？)
+        2. 数据封装、通信封装(作为公共模块？？)
             
             数据封装：ToSend 只有数据，没有行为方法，其中一些数据由Vote提供，服务器自身Vote作为QuorumPeer的属性被管理 参考UML
             
