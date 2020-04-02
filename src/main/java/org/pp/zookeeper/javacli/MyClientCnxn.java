@@ -14,8 +14,11 @@ public class MyClientCnxn {
     // Watcher registed in Packet
 //    private final LinkedBlockingDeque<ClientCnxn.Packet> outgoingQueue = new LinkedBlockingDeque<ClientCnxn.Packet>();
 
-    public MyClientCnxn(String connectConfig) {
+    private final Watcher watcher; // use zookeeper watcher interface
+
+    public MyClientCnxn(String connectConfig, Watcher watcher) {
         this.connectConfig = connectConfig;
+        this.watcher = watcher;
         sendThread = new MySendThread();
         eventThread = new MyEventThread();
     }
@@ -24,6 +27,8 @@ public class MyClientCnxn {
         // nio or netty connect
         // ClientCnxnSocketNetty extends ClientCnxnSocket 异步ChannelFutureListener监听 构造Packet put into outgoingQueue
         // 创建nio和netty的SocketChannel参考本例
+        // socket连接建立后KeeperState会变化
+//        KeeperState eventState = (isRO) ? KeeperState.ConnectedReadOnly : KeeperState.SyncConnected;
 
 //        private /*final*/ ClientCnxnSocket clientCnxnSocket;
 

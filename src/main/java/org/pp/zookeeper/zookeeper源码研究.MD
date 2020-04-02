@@ -40,10 +40,10 @@
         乐观锁：事务提交前验证
         
 # zookeeper是什么
-    为什么你会这么问？什么是什么典型的形式科学思维。。。
+    为什么你会这么问？什么是什么典型的形式科学思维，这是一个关于存在的终极问题，目前仍然没有答案。。。
     
         ZooKeeper是维护配置信息、命名、提供分布式同步和组服务于一体的服务，这些服务都以某种形式被分布式应用程序使用。
-    每次zookeeper被(分布式应用)发现时，都会进行大量工作来修复一些漏洞和竟态条件。zookeeper实现复杂，这使得它们在发生改变时
+    每次zookeeper被发现时，都会进行大量工作来修复一些漏洞和竟态条件。zookeeper实现复杂，这使得它们在发生改变时
     变得很脆弱并且难于管理。即使正常运行了zookeeper，在部署应用时，zookeeper服务的不同实现也会导致管理的复杂性。
     
     配置信息：zookeeper服务器节点注册
@@ -82,7 +82,7 @@
             protected final ClientCnxn cnxn;  // socket连接，多次封装后的client
             protected final HostProvider hostProvider;
             protected final ZKWatchManager watchManager; // zookeeper连接状态或节点事件监控程序管理
-        属性：发布的字段，具有数据操作权限，类可以根据本身数据的抽象情况决定是否将访问属性抽象为成员变量（字段）
+        属性：发布的字段，具有（类内/类外）数据操作权限，类可以根据本身数据的抽象情况决定是否将访问属性抽象为成员变量（字段）
             public ZKClientConfig getClientConfig() // zookeeper字段（数据项，需要设置值，查看构造方法），只读属性
             public List<String> getEphemerals() // 同步获取此会话创建的所有临时节点。   
             由字段ClientCnxn提供的只读属性
@@ -101,7 +101,13 @@
                 ZKClientConfig clientConfig)
         各参数具体含义参考从Paxos到Zookeeper 表5-2
 # zookeeper服务端 
-    源码环境搭建略
+    源码环境搭建
+    这里直接使用maven自动下载的源码这里使用版本3.6.0，需要在本机建立数据目录并且需要添加相关依赖
+    依赖见pom.xml
+    配置文件见./src_run_local_config/**  
+    注意集群运行需要设置idea RUN/DEBUG为允许并行运行，启动参数需要带上配置文件路径，如D:\tmp\zoo3.cfg
+    注意日志等级控制，在resources文件夹下log4j.properties，方便调试
+    特别注意：本例由于历史原理之前使用netty4.1.43研究过netty源码 zookeeper V3.6.0依赖netty4.1.45 不过maven管理没出问题！
     
     先假定你对zookeeper一无所知，从main方法开始，来看java怎么实现一个zookeeper服务。
     
@@ -109,7 +115,7 @@
         1. 解析命令行参数
             读取并解析进程配置文件，zookeeper不像spring对资源的加载和解析并没有做过多的封装，使用QuorumPeerConfig
         2. 启动清理任务线程
-            由于配置文件会指定一些数据文件目录，在启动进程时需要尽心清理，确保进程启动唯一占用这些文件不至产生脏数据
+            由于配置文件会指定一些数据文件目录，在启动进程时需要尽心清理，确保文件中只生成占用它的进程的数据。
         3. 判断zookeeper的运行模式：单机、分布式
 ```            
             if (args.length == 1 && config.isDistributed()) {
@@ -119,7 +125,52 @@
                ZooKeeperServerMain.main(args); // 静态方法调用
             }
 ```
+    确定一个leader
+        ZooKeeper分布式模式能保证了CAP理论中的CP，即一致性。通过leader对整个分布式系统(socket网)进行协调，最终使整个
+        集群中的数据一致，由于分布式系统的复杂性，为便于维护管理，zookeeper集群（如启动时）确定leader前不对外提供服务。
         
+        FAQ. 如果所有客户端连接的都是非leader服务器，可能吗？？此时如何进行一致性协调？？
+        
+        流程
+            解析配置文件、创建两个NIOServerCnxnFactory并将它们作为属性注入QuorumPeer
+                quorumPeer.setCnxnFactory(cnxnFactory);
+                quorumPeer.setSecureCnxnFactory(secureCnxnFactory);
+            QuorumPeer：仲裁协议管理类，当前服务器会有三种状态：
+                领导者选举，最初服务器都建议自己担任领导者
+                Follower服务器与领导者同步并复制任何交易
+                领导者服务器处理请求并转发给Follower（请求都有leader接收处理吗？？）
+                
+                仲裁是一个法律术语，是指由双方当事人协议将争议提交（具有公认地位的）第三者，由该第三者对争议的是非曲直进行
+                评判并作出裁决的一种解决争议的方法。
+            quorumPeer.start(); 开始仲裁 start()方法如下：这里先只关注Leader election
+```      
+            @Override
+            public synchronized void start() {
+                // 选举前准备工作：数据（）、socket连接... 
+                startLeaderElection();
+                // ...
+                super.start();  // 真正线程启动Thread.start()->执行run() 线程启动 NEW->Runnable  
+            }
+
+            // startLeaderElection(Args) -> createElectionAlgorithm(Args)
+            // 最终在QuorumPeerConfig类中找到默认的electionAlgorithm => protected int electionAlg = 3;
+            @SuppressWarnings("deprecation")
+            protected Election createElectionAlgorithm(int electionAlgorithm) {
+                // ...
+                case 3:
+                    QuorumCnxManager qcm = createCnxnManager();
+                    // ...
+                    QuorumCnxManager.Listener listener = qcm.listener;
+                    if (listener != null) {
+                        listener.start();
+                        FastLeaderElection fle = new FastLeaderElection(this, qcm);
+                        fle.start();
+                        // ...
+                    }
+                // ...
+            }
+            
+```                 
 # 应用场景与如何实现       
       
 # 参考资料

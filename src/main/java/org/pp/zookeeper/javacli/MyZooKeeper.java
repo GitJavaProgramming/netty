@@ -17,6 +17,6 @@ public class MyZooKeeper {
     }
 
     private MyClientCnxn createCli() {
-        return new MyClientCnxn(connectConfig);
+        return new MyClientCnxn(connectConfig, watcher);
     }
 }
