@@ -17,25 +17,29 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class RWBizCommunicationModel<T extends IMessage> {
 
-    /*********************************************** 业务通信模块 ***********************************************/
+    /***************************** 业务通信模块 与业务通信相关的接收队列 子类共用 ****************************/
     /**
      * 连接管理器
      */
 //    private final SocketManager socketManager;
 
     /** 发送线程 */
-    protected final ExecutorService recvService = Executors.newSingleThreadExecutor();
-    /** 接收线程 */
     protected final ExecutorService sendService = Executors.newSingleThreadExecutor();
-    protected final BlockingQueue<T> recvQueue;  // 与业务通信相关的接收队列 子类共用
+    /** 接收线程 */
+    protected final ExecutorService recvService = Executors.newSingleThreadExecutor();
+    /** 发送队列 */
+    protected final LinkedBlockingQueue<T> sendqueue;
+    /** 接收队列 */
+    protected final BlockingQueue<T> recvQueue;
 
     public RWBizCommunicationModel() {
+        sendqueue = new LinkedBlockingQueue<>();
         recvQueue = new LinkedBlockingQueue<>();
 //        socketManager = null;
     }
 
-    protected abstract class SenderWorker implements Runnable {}
-    protected abstract class  RecvWorker implements Runnable {}
+//    protected abstract class SenderWorker implements Runnable {}
+//    protected abstract class  RecvWorker implements Runnable {}
 
     /**
      * 与业务模型通信
@@ -44,14 +48,14 @@ public abstract class RWBizCommunicationModel<T extends IMessage> {
 //    /** 底层通信 空实现 */
 //    protected void processConn(/*SocketManager socketManager*/) {}
 
-    private SenderWorker senderWorker;
-    private RecvWorker recvWorker;
+    private Runnable senderWorker;
+    private Runnable recvWorker;
     protected void schedule(ToSend msg) {
         sendService.execute(senderWorker); // 任务交给子类实例化 setter
         recvService.execute(recvWorker);
     }
     /** 以下setter子类必须实现，注入属性 */
-    public void workerInit(SenderWorker senderWorker, RecvWorker recvWorker) {
+    public void workerInit(Runnable senderWorker, Runnable recvWorker) {
         this.senderWorker = senderWorker;
         this.recvWorker = recvWorker;
     }
