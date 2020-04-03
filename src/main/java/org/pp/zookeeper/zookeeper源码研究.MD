@@ -226,7 +226,9 @@
             要做一个完全解耦的通信模型即底层通信、业务通信可以分别对应不同模型，然而由于复杂性并没有很好的实现。
             从降低复杂性的角度考虑，业务模型应该是依赖通信模型的，业务作为通信的扩展功能提供接口，这样就可以很好的抽象了
             代码见：./zookeeper/server/my/**
-               
+            
+        到此要实现zookeeper还剩下三个问题：数据与存储、socket连接建立、leader选举逻辑
+              
     zookeeper的配置文件参数配置：
         https://zookeeper.apache.org/doc/r3.6.0/zookeeperAdmin.html#sc_configuration
                

@@ -7,10 +7,10 @@ public abstract class BaseCoordinator<S extends IMessage, T extends IMessage> {
     /**
      * 这两个通信模型还可以继续抽象分离为两个不同接口模型至此就会完全解耦
      */
-    private final RWBizCommunicationModel<S> qcm;
-    private final RWBizCommunicationModel<T> election;
+    private final CommunicationModel<S> qcm;
+    private final CommunicationModel<T> election;
 
-    public BaseCoordinator(RWBizCommunicationModel<S> qcm, RWBizCommunicationModel<T> election) {
+    public BaseCoordinator(CommunicationModel<S> qcm, CommunicationModel<T> election) {
         this.qcm = qcm;
         this.election = election;
     }

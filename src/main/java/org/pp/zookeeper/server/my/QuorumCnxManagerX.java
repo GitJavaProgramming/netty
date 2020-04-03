@@ -48,7 +48,11 @@ public class QuorumCnxManagerX<T extends IMessage> extends RWBizCommunicationMod
      * 底层通信 空实现
      */
     protected void processConn(/*SocketManager socketManager*/) {
-        LowerLayerSendWorker lowerLayerSendWorker = senderWorkerMap.get(1/*server id*/);
+        LowerLayerSendWorker lowerLayerSendWorker = senderWorkerMap.get(1L/*server id*/);
+        if(lowerLayerSendWorker == null) {
+            lowerLayerSendWorker = new LowerLayerSendWorker();
+            senderWorkerMap.put(1L, lowerLayerSendWorker);
+        }
         lowerLayerSendService.execute(lowerLayerSendWorker);
     }
 

@@ -15,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * 抽象公共的业务通信层
  */
-public abstract class RWBizCommunicationModel<T extends IMessage> {
+public abstract class RWBizCommunicationModel<T extends IMessage> implements CommunicationModel<T> {
 
     /***************************** 业务通信模块 与业务通信相关的接收队列 子类共用 ****************************/
     /**
