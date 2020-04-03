@@ -1,17 +1,19 @@
 package org.pp.zookeeper.server.my;
 
+import org.pp.zookeeper.server.BaseCoordinator;
 import org.pp.zookeeper.server.my.bizmsg.Notification;
 import org.pp.zookeeper.server.my.bizmsg.ToSend;
 
 /**
  * 协调者 协调两个模型层
  */
-public class Coordinator {
+public class Coordinator extends BaseCoordinator<ToSend, Notification> {
 
-    private final LeaderElection<Notification> election;
     private final QuorumCnxManagerX<ToSend> qcm;
+    private final LeaderElection<Notification> election;
 
     public Coordinator(QuorumCnxManagerX<ToSend> qcm, LeaderElection<Notification> election) {
+        super(qcm, election);
         this.qcm = qcm;
         this.election = election;
     }

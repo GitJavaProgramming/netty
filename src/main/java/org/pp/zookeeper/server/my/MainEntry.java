@@ -14,6 +14,7 @@ public class MainEntry {
         Coordinator coordinator = new Coordinator(qcm, election);
         coordinator.start(); // 消息与通信协调
 
+        qcm.processConn(); // 底层链接
         election.lookForLeader(); // 选举
     }
 
