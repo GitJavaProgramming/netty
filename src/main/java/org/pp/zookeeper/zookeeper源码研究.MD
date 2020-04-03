@@ -220,7 +220,13 @@
                 设置当前选票
                 setCurrentVote(makeLEStrategy().lookForLeader()); // 这里可能是想使用策略模式对应选举算法不同实现
                 接口Election当前只有FastLeaderElection一个子类
-            
+         
+         总结
+            从宏观上看，zookeeper作为一个java应用，它的通信模型、业务逻辑并没有很好的解耦。不过从代码现状来看，作者应该是想
+            要做一个完全解耦的通信模型即底层通信、业务通信可以分别对应不同模型，然而由于复杂性并没有很好的实现。
+            从降低复杂性的角度考虑，业务模型应该是依赖通信模型的，业务作为通信的扩展功能提供接口，这样就可以很好的抽象了
+            代码见：./zookeeper/server/my/**
+               
     zookeeper的配置文件参数配置：
         https://zookeeper.apache.org/doc/r3.6.0/zookeeperAdmin.html#sc_configuration
                
