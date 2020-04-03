@@ -8,10 +8,10 @@ import org.pp.zookeeper.server.my.msg.ToSend;
  */
 public class Coordinator extends BaseCoordinator<ToSend, Notification> {
 
-    private final QuorumCnxManagerX<ToSend> qcm;
-    private final LeaderElection<Notification> election;
+    private final QuorumCnxManagerX<ToSend, Notification> qcm;
+    private final LeaderElection<Notification, ToSend> election;
 
-    public Coordinator(QuorumCnxManagerX<ToSend> qcm, LeaderElection<Notification> election) {
+    public Coordinator(QuorumCnxManagerX<ToSend, Notification> qcm, LeaderElection<Notification, ToSend> election) {
         super(qcm, election); // 向父类传入数据，在父类可以做一些初始化工作
         this.qcm = qcm;
         this.election = election;

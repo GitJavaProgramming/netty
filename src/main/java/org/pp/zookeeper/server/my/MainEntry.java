@@ -20,11 +20,11 @@ public class MainEntry {
 
     }
 
-    private static QuorumCnxManagerX<ToSend> createCnxnManager() {
-        return new QuorumCnxManagerX();
+    private static QuorumCnxManagerX<ToSend, Notification> createCnxnManager() {
+        return new QuorumCnxManagerX<ToSend, Notification>();
     }
 
-    private static LeaderElection<Notification> createLeaderElection() {
+    private static LeaderElection<Notification, ToSend> createLeaderElection() {
         return new LeaderElection<>();
     }
 }

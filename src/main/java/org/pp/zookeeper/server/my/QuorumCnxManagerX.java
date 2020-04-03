@@ -6,7 +6,7 @@ import org.pp.zookeeper.server.my.msg.ToSend;
 
 import java.util.concurrent.BlockingQueue;
 
-public class QuorumCnxManagerX<T extends IMessage> extends RWBizCommunicationModel<T> {
+public class QuorumCnxManagerX<S extends IMessage, T extends IMessage> extends RWBizCommunicationModel<S, T> {
 
     /**
      * 网络底层连接，这里还可以抽象，不过已经没有必要了，这里是一定和底层socket耦合的
@@ -14,7 +14,6 @@ public class QuorumCnxManagerX<T extends IMessage> extends RWBizCommunicationMod
     private final SocketManager socketManager;
 
     public QuorumCnxManagerX() {
-        workerInit(new SenderTask(), new RecvTask());
         socketManager = new SocketManager();
     }
 
@@ -30,32 +29,42 @@ public class QuorumCnxManagerX<T extends IMessage> extends RWBizCommunicationMod
         // 其他必须数据
     }
 
-    public void schedule(BlockingQueue sendqueue, BlockingQueue recvQueue) {
+    public void schedule(BlockingQueue<T> sendqueue, BlockingQueue<T> recvQueue) {
+        workerInit(new SenderTask(recvQueue), new RecvTask(sendqueue));
         super.schedule(sendqueue, recvQueue);
 //        processConn(buildMsg(null, null)); // 底层链接
     }
 
-    /**
-     * build message  用于建立socket管理
-     */
-    public QuorumCnxManagerX.Message buildMsg(ToSend msg, Notification notification) {
-        // ToSend Notification  ->  Message
-        return new QuorumCnxManagerX.Message();
-    }
+//    /**
+//     * build message  用于建立socket管理
+//     */
+//    public QuorumCnxManagerX.Message buildMsg(ToSend msg, Notification notification) {
+//        // ToSend Notification  ->  Message
+//        return new QuorumCnxManagerX.Message();
+//    }
 
     /*********************************************** 与业务通信的模块 ***********************************************/
-    class SenderTask implements Runnable {
+    class SenderTask extends SenderWorker {
+
+        public SenderTask(BlockingQueue<T> recvQueue) {
+            super(recvQueue);
+        }
 
         @Override
         public void run() {
-
+            recvQueueRelative.poll();
         }
     }
 
-    class RecvTask implements Runnable {
+    class RecvTask extends RecvWorker {
+
+        protected RecvTask(BlockingQueue<T> sendqueue) {
+            super(sendqueue);
+        }
 
         @Override
         public void run() {
+//            sendqueueRelative.offer();
         }
     }
 }
