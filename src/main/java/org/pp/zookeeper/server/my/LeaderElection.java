@@ -5,6 +5,7 @@ import org.apache.zookeeper.server.quorum.Vote;
 import org.pp.zookeeper.server.my.msg.IMessage;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class LeaderElection<S extends IMessage, T extends IMessage> extends RWBizCommunicationModel<S, T> implements Election/*实现功能接口*/ {
 
@@ -15,6 +16,11 @@ public class LeaderElection<S extends IMessage, T extends IMessage> extends RWBi
     /*********************************************** 逻辑业务模块 ***********************************************/
     @Override
     public Vote lookForLeader() throws InterruptedException {
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } finally {
+            shutdown();
+        }
         return null;
     }
 

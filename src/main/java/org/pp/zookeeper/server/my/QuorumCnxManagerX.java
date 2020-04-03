@@ -1,8 +1,6 @@
 package org.pp.zookeeper.server.my;
 
 import org.pp.zookeeper.server.my.msg.IMessage;
-import org.pp.zookeeper.server.my.msg.Notification;
-import org.pp.zookeeper.server.my.msg.ToSend;
 
 import java.util.concurrent.BlockingQueue;
 

@@ -15,10 +15,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class RWBizCommunicationModel<S extends IMessage, T extends IMessage> implements CommunicationModel<S, T> {
 
     /***************************** 业务通信模块 与业务通信相关的接收队列 子类共用 ****************************/
-    /** 发送线程 */
-    protected final ExecutorService sendService = Executors.newSingleThreadExecutor();
-    /** 接收线程 */
-    protected final ExecutorService recvService = Executors.newSingleThreadExecutor();
+    protected static/*子类共用*/ final ExecutorService sendService = Executors.newFixedThreadPool(2);
+    protected static/*子类共用*/ final ExecutorService recvService = Executors.newFixedThreadPool(2);
     /** 发送队列 */
     protected final BlockingQueue<S> sendqueue;
     /** 接收队列 */
@@ -36,8 +34,6 @@ public abstract class RWBizCommunicationModel<S extends IMessage, T extends IMes
     private SenderWorker senderWorker;
     private RecvWorker recvWorker;
     public void schedule(BlockingQueue<T> sendqueue, BlockingQueue<T> recvQueue) {
-        this.sendqueueRelative = sendqueue;
-        this.recvQueueRelative = recvQueue;
         sendService.execute(senderWorker); // 任务交给子类实例化 setter
         recvService.execute(recvWorker);
     }
@@ -61,11 +57,7 @@ public abstract class RWBizCommunicationModel<S extends IMessage, T extends IMes
 
     /** 资源回收 */
     public void shutdown() {
-        this.sendService.shutdown();
-        this.recvService.shutdown();
-        this.sendqueue.clear();
-        this.recvQueue.clear();
-        this.sendqueueRelative.clear();
-        this.recvQueueRelative.clear();
+        sendService.shutdown(); // 线程池关闭 策略
+        recvService.shutdown();
     }
 }
