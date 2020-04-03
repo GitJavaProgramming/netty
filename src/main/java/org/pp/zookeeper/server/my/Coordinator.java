@@ -18,30 +18,9 @@ public class Coordinator extends BaseCoordinator<ToSend, Notification> {
     }
 
     public void start() {
-
-        // 准备数据
-        ToSend msg = qcm.recvQueue.poll();
-        Notification notification = election.recvQueue.poll();
-
         // 模型调度
-        qcm.schedule(msg, buildMsg(msg, notification));
-        election.schedule(notification, buildMsg2(msg, notification));
+        qcm.schedule(election.sendqueue, election.recvQueue);
+        election.schedule(qcm.sendqueue, qcm.recvQueue);
 
-    }
-
-    /**
-     * build message  用于建立socket管理
-     */
-    public QuorumCnxManagerX.Message buildMsg(ToSend msg, Notification notification) {
-        // ToSend Notification  ->  Message
-        return new QuorumCnxManagerX.Message();
-    }
-
-    /**
-     * build message  用于模型层间通信
-     */
-    public QuorumCnxManagerX.Message buildMsg2(ToSend msg, Notification notification) {
-        // ToSend Notification  ->  Message
-        return new QuorumCnxManagerX.Message();
     }
 }

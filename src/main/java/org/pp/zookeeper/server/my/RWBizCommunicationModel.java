@@ -27,7 +27,7 @@ public abstract class RWBizCommunicationModel<T extends IMessage> implements Com
     /** 接收线程 */
     protected final ExecutorService recvService = Executors.newSingleThreadExecutor();
     /** 发送队列 */
-    protected final LinkedBlockingQueue<T> sendqueue;
+    protected final BlockingQueue<T> sendqueue;
     /** 接收队列 */
     protected final BlockingQueue<T> recvQueue;
 
@@ -49,7 +49,7 @@ public abstract class RWBizCommunicationModel<T extends IMessage> implements Com
 
     private Runnable senderWorker;
     private Runnable recvWorker;
-    public void schedule(T msg) {
+    public void schedule(BlockingQueue/*<T>*/ sendqueue, BlockingQueue/*<T>*/ recvQueue) {
         sendService.execute(senderWorker); // 任务交给子类实例化 setter
         recvService.execute(recvWorker);
     }
