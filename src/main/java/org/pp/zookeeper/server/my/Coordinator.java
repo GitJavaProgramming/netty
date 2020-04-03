@@ -1,6 +1,5 @@
 package org.pp.zookeeper.server.my;
 
-import org.pp.zookeeper.server.BaseCoordinator;
 import org.pp.zookeeper.server.my.bizmsg.Notification;
 import org.pp.zookeeper.server.my.bizmsg.ToSend;
 

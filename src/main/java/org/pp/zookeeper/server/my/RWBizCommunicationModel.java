@@ -32,7 +32,7 @@ public abstract class RWBizCommunicationModel<T extends IMessage> {
     /** 接收队列 */
     protected final BlockingQueue<T> recvQueue;
 
-    public RWBizCommunicationModel() {
+    protected/*只被继承*/ RWBizCommunicationModel() {
         sendqueue = new LinkedBlockingQueue<>();
         recvQueue = new LinkedBlockingQueue<>();
 //        socketManager = null;

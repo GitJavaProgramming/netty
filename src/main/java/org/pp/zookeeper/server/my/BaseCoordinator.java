@@ -1,6 +1,5 @@
-package org.pp.zookeeper.server;
+package org.pp.zookeeper.server.my;
 
-import org.pp.zookeeper.server.my.RWBizCommunicationModel;
 import org.pp.zookeeper.server.my.bizmsg.IMessage;
 
 public abstract class BaseCoordinator<S extends IMessage, T extends IMessage> {
@@ -15,4 +14,6 @@ public abstract class BaseCoordinator<S extends IMessage, T extends IMessage> {
         this.qcm = qcm;
         this.election = election;
     }
+
+    protected abstract void start();
 }
