@@ -7,24 +7,17 @@ public class MainEntry {
 
     public static void main(String[] args) throws InterruptedException {
         // 一人一个发送线程、接收线程、发送队列、接收队列
-        // 由于泛型限定的存在，消息通信需要进行消息接口转换
-        QuorumCnxManagerX qcm = createCnxnManager();
-        ToSend msg = new ToSend();
-        qcm.sendqueue.offer(msg);
-//        qcm.recvQueue.poll();
-
+        QuorumCnxManagerX<ToSend> qcm = createCnxnManager();
         LeaderElection<Notification> election = new LeaderElection(); // Notification 通信消息模型
-        Notification notification = election.recvQueue.poll(); // 需要消息转换
-        election.lookForLeader();
 
-        System.out.println(qcm.sendqueue.size());
-        System.out.println(qcm.recvQueue.size());
+        // 由于泛型限定的存在，消息通信需要进行消息接口转换
+        Coordinator coordinator = new Coordinator(qcm, election);
+        coordinator.start(); // 消息与通信协调
 
-        System.out.println(election.sendqueue.size());
-        System.out.println(election.recvQueue.size());
+        election.lookForLeader(); // 选举
     }
 
-    public static QuorumCnxManagerX createCnxnManager() {
+    public static QuorumCnxManagerX<ToSend> createCnxnManager() {
         return new QuorumCnxManagerX();
     }
 }
