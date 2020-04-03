@@ -59,4 +59,12 @@ public abstract class RWBizCommunicationModel<T extends IMessage> {
         this.senderWorker = senderWorker;
         this.recvWorker = recvWorker;
     }
+
+    /** 资源回收 */
+    public void shutdown() {
+        this.sendService.shutdown();
+        this.recvService.shutdown();
+        this.sendqueue.clear();
+        this.recvQueue.clear();
+    }
 }

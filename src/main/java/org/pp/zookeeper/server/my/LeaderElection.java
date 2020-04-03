@@ -19,9 +19,10 @@ public class LeaderElection<T extends IMessage> extends RWBizCommunicationModel<
         recvQueue.poll();
         return null;
     }
+
     @Override
     public void shutdown() {
-        // ...
+        super.shutdown();
     }
 
     /*********************************************** 与业务通信的模块 ***********************************************/

@@ -1,6 +1,6 @@
 package org.pp.zookeeper.server.my;
 
-import org.pp.zookeeper.server.my.bizmsg.ToSend;
+import org.pp.zookeeper.server.my.bizmsg.IMessage;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class QuorumCnxManagerX extends RWBizCommunicationModel<ToSend> {
+public class QuorumCnxManagerX<T extends IMessage> extends RWBizCommunicationModel<T> {
 
 
     /*********************************************** 底层通信模块 ***********************************************/
