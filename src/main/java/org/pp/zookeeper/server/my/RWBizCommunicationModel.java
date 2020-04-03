@@ -1,7 +1,6 @@
 package org.pp.zookeeper.server.my;
 
-import org.pp.zookeeper.server.my.bizmsg.IMessage;
-import org.pp.zookeeper.server.my.bizmsg.ToSend;
+import org.pp.zookeeper.server.my.msg.IMessage;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +49,7 @@ public abstract class RWBizCommunicationModel<T extends IMessage> implements Com
 
     private Runnable senderWorker;
     private Runnable recvWorker;
-    protected void schedule(ToSend msg) {
+    public void schedule(T msg) {
         sendService.execute(senderWorker); // 任务交给子类实例化 setter
         recvService.execute(recvWorker);
     }
