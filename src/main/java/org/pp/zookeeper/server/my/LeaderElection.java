@@ -5,11 +5,21 @@ import org.apache.zookeeper.server.quorum.Vote;
 import org.pp.zookeeper.server.my.msg.IMessage;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class LeaderElection<S extends IMessage, T extends IMessage> extends RWBizCommunicationModel<S, T> implements Election/*实现功能接口*/ {
 
-    public LeaderElection() {
+    private final SocketManager socketManager; // 可以抽象为父类成员，不过已经不是解耦了
+
+    public LeaderElection(SocketManager socketManager) {
+        // 连接管理器  根据需要可以抽象为通道
+        this.socketManager = socketManager;
+
+        // 初始化通信通道  MainEntry
+        BlockingQueue sendqueue = new LinkedBlockingQueue<>();
+        BlockingQueue recvQueue = new LinkedBlockingQueue<>();
+        communicationPipeLine = new CommunicationPipeLine(sendqueue, recvQueue);
     }
 
 
@@ -29,9 +39,9 @@ public class LeaderElection<S extends IMessage, T extends IMessage> extends RWBi
         super.shutdown();
     }
 
-    public void schedule(BlockingQueue<T> sendqueue, BlockingQueue<T> recvQueue) {
-        workerInit(new SenderTask(recvQueue), new RecvTask(sendqueue));
-        super.schedule(sendqueue, recvQueue);
+    public void schedule(PipeLine pipeLine) {
+        workerInit(new SenderTask(pipeLine), new RecvTask(pipeLine));
+        super.schedule(pipeLine);
 //        buildMsg();
         try {
             // 在开始选举的准备工作完成之前需要阻塞
@@ -41,32 +51,23 @@ public class LeaderElection<S extends IMessage, T extends IMessage> extends RWBi
         }
     }
 
-//    /**
-//     * build message  用于模型层间通信
-//     */
-//    public QuorumCnxManagerX.Message buildMsg(ToSend msg, Notification notification) {
-//        // ToSend Notification  ->  Message
-//        return new QuorumCnxManagerX.Message();
-//    }
-
-
     /*********************************************** 与业务通信的模块 ***********************************************/
     class SenderTask extends SenderWorker {
 
-        public SenderTask(BlockingQueue<T> recvQueue) {
-            super(recvQueue);
+        public SenderTask(PipeLine pipeLine) {
+            super(pipeLine);
         }
 
         @Override
         public void run() {
-            recvQueueRelative.poll();
+//            communicationPipeLine
         }
     }
 
     class RecvTask extends RecvWorker {
 
-        protected RecvTask(BlockingQueue<T> sendqueue) {
-            super(sendqueue);
+        public RecvTask(PipeLine pipeLine) {
+            super(pipeLine);
         }
 
         @Override

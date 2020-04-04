@@ -3,16 +3,19 @@ package org.pp.zookeeper.server.my;
 import org.pp.zookeeper.server.my.msg.IMessage;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class QuorumCnxManagerX<S extends IMessage, T extends IMessage> extends RWBizCommunicationModel<S, T> {
 
-    /**
-     * 网络底层连接，这里还可以抽象，不过已经没有必要了，这里是一定和底层socket耦合的
-     */
-    private final SocketManager socketManager;
+    private final SocketManager socketManager; // 可以抽象为父类成员，不过已经不是解耦了
 
-    public QuorumCnxManagerX() {
-        socketManager = new SocketManager();
+    public QuorumCnxManagerX(SocketManager socketManager) {
+        // 连接管理器  根据需要可以抽象为通道
+        this.socketManager = socketManager;
+
+        // // 初始化通信通道  MainEntry
+        BlockingQueue recvQueue = new LinkedBlockingQueue<>();
+        communicationPipeLine = new CommunicationPipeLine(null/*zookeeper没用到*/, recvQueue);
     }
 
     /**
@@ -27,9 +30,9 @@ public class QuorumCnxManagerX<S extends IMessage, T extends IMessage> extends R
         // 其他必须数据
     }
 
-    public void schedule(BlockingQueue<T> sendqueue, BlockingQueue<T> recvQueue) {
-        workerInit(new SenderTask(recvQueue), new RecvTask(sendqueue));
-        super.schedule(sendqueue, recvQueue);
+    public void schedule(PipeLine pipeLine) {
+        workerInit(new SenderTask(pipeLine), new RecvTask(pipeLine));
+        super.schedule(pipeLine);
 //        processConn(buildMsg(null, null)); // 底层链接
     }
 
@@ -44,20 +47,20 @@ public class QuorumCnxManagerX<S extends IMessage, T extends IMessage> extends R
     /*********************************************** 与业务通信的模块 ***********************************************/
     class SenderTask extends SenderWorker {
 
-        public SenderTask(BlockingQueue<T> recvQueue) {
-            super(recvQueue);
+        public SenderTask(PipeLine pipeLine) {
+            super(pipeLine);
         }
 
         @Override
         public void run() {
-            recvQueueRelative.poll();
+//            communicationPipeLine
         }
     }
 
     class RecvTask extends RecvWorker {
 
-        protected RecvTask(BlockingQueue<T> sendqueue) {
-            super(sendqueue);
+        public RecvTask(PipeLine pipeLine) {
+            super(pipeLine);
         }
 
         @Override

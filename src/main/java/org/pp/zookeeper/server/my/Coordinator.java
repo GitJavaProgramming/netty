@@ -11,8 +11,6 @@ public class Coordinator extends BaseCoordinator<ToSend, Notification> {
     private final QuorumCnxManagerX<ToSend, Notification> qcm;
     private final LeaderElection<Notification, ToSend> election;
 
-    protected volatile boolean stop = false;
-
     public Coordinator(QuorumCnxManagerX<ToSend, Notification> qcm, LeaderElection<Notification, ToSend> election) {
         super(qcm, election); // 向父类传入数据，在父类可以做一些初始化工作
         this.qcm = qcm;
@@ -21,7 +19,7 @@ public class Coordinator extends BaseCoordinator<ToSend, Notification> {
 
     public void start() {
         // 模型调度
-        qcm.schedule(election.sendqueue, election.recvQueue);
-        election.schedule(qcm.sendqueue, qcm.recvQueue);
+        qcm.schedule(election.communicationPipeLine/*, election.socketPipeLine*/);
+        election.schedule(qcm.communicationPipeLine/*, qcm.socketPipeLine*/);
     }
 }

@@ -178,7 +178,7 @@
             数据封装：ToSend 只有数据，没有行为方法，其中一些数据由Vote提供，服务器自身Vote作为QuorumPeer的属性被管理 参考UML
             
             FastLeaderElection实例化，初始化数据成员，从构造方法看出它聚合了QuorumPeer, QuorumCnxManager同时结合自身数据
-            提供更多的功能。其中比较重要的成员（用于socket的数据收发）：
+            提供更多的功能。其中比较重要的成员：
                 sendqueue = new LinkedBlockingQueue<ToSend>();
                 recvqueue = new LinkedBlockingQueue<Notification>();
                 this.messenger = new Messenger(manager);
@@ -228,6 +228,30 @@
             代码见：./zookeeper/server/my/**
             
         到此要实现zookeeper还剩下三个问题：数据与存储、socket连接建立、leader选举逻辑
+        选举逻辑主要判断选票Vote的各个成员状态 参考UML
+            version             通知版本，更新只出现在leader服务器中，设置Notification.CURRENTVERSION = 0x2
+            id                  被推举的leader的SID值
+            zxid                被推举的leader的事务ID
+            electionEpoch       逻辑时钟，每一轮选举更新提案都会自增1
+            peerEpoch           被选举的leader的时期
+            state               当前服务器的状态
+        领导者状态变更只在两处：
+        1. QuorumPeer.updateServerState() 
+            updateServerState() 有三处调用都在QuorumPeer.run()的主循环中 FOLLOWING, LEADING, OBSERVING
+        2. FastLeeaderElection.Messenger.WorkerReveiver.run() {
+            int rstate = response.buffer.getInt();
+            // ...
+            case 2:
+                ackstate = QuorumPeer.ServerState.LEADING;  // 选出leader
+                break;
+            // ...
+        }
+        QuorumPeer.run()的主循环中leader选出之后更新服务器状态ServerState--产生三种角色：FOLLOWING, LEADING, OBSERVING
+            observer.observeLeader();
+            follower.followLeader();
+            leader.lead();
+        
+        
               
     zookeeper的配置文件参数配置：
         https://zookeeper.apache.org/doc/r3.6.0/zookeeperAdmin.html#sc_configuration

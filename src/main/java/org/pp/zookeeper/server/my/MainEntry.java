@@ -12,6 +12,8 @@ import org.pp.zookeeper.server.my.msg.ToSend;
  */
 public class MainEntry {
 
+    private static SocketManager socketManager;
+
     public static void main(String[] args) {
         // 一人一个发送线程、接收线程、发送队列、接收队列
         // 由于泛型限定的存在，消息通信需要进行消息接口转换
@@ -21,10 +23,17 @@ public class MainEntry {
     }
 
     private static QuorumCnxManagerX<ToSend, Notification> createCnxnManager() {
-        return new QuorumCnxManagerX<ToSend, Notification>();
+        return new QuorumCnxManagerX<ToSend, Notification>(getSingleton());
     }
 
     private static LeaderElection<Notification, ToSend> createLeaderElection() {
-        return new LeaderElection<>();
+        return new LeaderElection<>(getSingleton());
+    }
+
+    private static synchronized SocketManager getSingleton() {
+        if (socketManager == null) {
+            socketManager = new SocketManager();
+        }
+        return socketManager;
     }
 }
