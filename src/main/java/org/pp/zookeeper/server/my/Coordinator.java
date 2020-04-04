@@ -19,7 +19,7 @@ public class Coordinator extends BaseCoordinator<ToSend, Notification> {
 
     public void start() {
         // 模型调度
-        qcm.schedule(election.communicationPipeLine/*, election.socketPipeLine*/);
-        election.schedule(qcm.communicationPipeLine/*, qcm.socketPipeLine*/);
+        qcm.schedule(election.communicationPipeLine/*, socketPipeLine*/);
+        election.schedule(qcm.communicationPipeLine/*, socketPipeLine*/);
     }
 }

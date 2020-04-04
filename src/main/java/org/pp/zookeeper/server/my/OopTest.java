@@ -19,12 +19,15 @@ public class OopTest {
         System.out.println(subA.superQueue);
         System.out.println(subB.superQueue);
         System.out.println(subA.sendService == subB.sendService);
+        System.out.println(SuperCls.aInt);
     }
 }
 
 abstract class SuperCls<T> {
-    protected final BlockingQueue<T> superQueue;/**/
+    protected final BlockingQueue<T> superQueue;/*实例变量, 继承*/
     protected final ExecutorService sendService = Executors.newSingleThreadExecutor();
+    protected static int aInt = 0; // 类变量--对象共享
+    private static final int bInt = 0;  // 常量
 
     public SuperCls() {
         superQueue = new LinkedBlockingQueue<>();
@@ -40,6 +43,8 @@ class SubA extends SuperCls<Integer> {
 
     public void test() {
         superQueue.offer(1);
+        aInt++;
+//        bInt++;
     }
 }
 
@@ -49,6 +54,7 @@ class SubB extends SuperCls<String> {
     }
 
     public void test() {
+        aInt++;
         superQueue.offer("nihao");
         superQueue.offer("nihao");
     }
