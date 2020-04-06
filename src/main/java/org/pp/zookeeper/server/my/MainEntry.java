@@ -12,25 +12,27 @@ import org.pp.zookeeper.server.my.msg.ToSend;
  */
 public class MainEntry {
 
-    private static SocketManager socketManager;
+    private SocketManager socketManager;
 
     public static void main(String[] args) {
+        MainEntry entry = new MainEntry();
+        entry.getSingletonLeaderElectionServer().listen();
         // 一人一个发送线程、接收线程、发送队列、接收队列
         // 由于泛型限定的存在，消息通信需要进行消息接口转换
-        Coordinator coordinator = new Coordinator(createCnxnManager(), createLeaderElection());
+        Coordinator coordinator = new Coordinator(entry.createCnxnManager(), entry.createLeaderElection());
         coordinator.start(); // 消息与通信协调
 
     }
 
-    private static QuorumCnxManagerX<ToSend, Notification> createCnxnManager() {
-        return new QuorumCnxManagerX<ToSend, Notification>(getSingleton());
+    private QuorumCnxManagerX<ToSend, Notification> createCnxnManager() {
+        return new QuorumCnxManagerX(socketManager);
     }
 
-    private static LeaderElection<Notification, ToSend> createLeaderElection() {
-        return new LeaderElection<>(getSingleton());
+    private LeaderElection<Notification, ToSend> createLeaderElection() {
+        return new LeaderElection<>(socketManager);
     }
 
-    private static synchronized SocketManager getSingleton() {
+    private synchronized SocketManager getSingletonLeaderElectionServer() {
         if (socketManager == null) {
             socketManager = new SocketManager();
         }

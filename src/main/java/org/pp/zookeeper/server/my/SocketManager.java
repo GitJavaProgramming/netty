@@ -21,6 +21,8 @@ public class SocketManager {
      */
     final ConcurrentHashMap<Long, ByteBuffer> lastMessageSent;
 
+    volatile boolean shutdown = false;
+
     public SocketManager() {
         this.senderWorkerMap = new ConcurrentHashMap<>();
         this.lowerLayerSendService = Executors.newSingleThreadExecutor(); // 根据集群配置
@@ -50,4 +52,25 @@ public class SocketManager {
 
         }
     }
+
+    /* 选举服务器 */
+    class LeaderElectionServer extends Thread {
+
+        @Override
+        public void run() {
+            // ...
+        }
+    }
+
+    /**
+     * 监听，等待所有连接都建立，都是使用CountDownLatch来处理。例如：Leader.run()
+     * -- ExecutorService executor = Executors.newFixedThreadPool(serverSockets.size());
+     * -- CountDownLatch latch = new CountDownLatch(serverSockets.size());
+     * -- serverSockets.forEach(serverSocket -> executor.submit(new LearnerCnxAcceptorHandler(serverSocket, latch)));
+     * -- latch.await(); // 等待计数器为0
+     */
+    public void listen() {
+        new LeaderElectionServer().start();
+    }
+
 }

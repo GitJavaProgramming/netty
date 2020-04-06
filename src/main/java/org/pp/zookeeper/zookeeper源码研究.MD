@@ -225,7 +225,7 @@
             从宏观上看，zookeeper作为一个java应用，它的通信模型、业务逻辑并没有很好的解耦。不过从代码现状来看，作者应该是想
             要做一个完全解耦的通信模型即底层通信、业务通信可以分别对应不同模型，然而由于复杂性并没有很好的实现。
             从降低复杂性的角度考虑，业务模型应该是依赖通信模型的，业务作为通信的扩展功能提供接口，这样就可以很好的抽象了
-            代码见：./zookeeper/server/my/**
+            代码见：./server/my/**
             
         到此要实现zookeeper还剩下三个问题：数据与存储、socket连接建立、leader选举逻辑
         选举逻辑主要判断选票Vote的各个成员状态 参考UML
@@ -250,6 +250,28 @@
             observer.observeLeader();
             follower.followLeader();
             leader.lead();
+        
+        Leader服务器是整个集群工作机制中的核心，其主要工作有以下两个：
+            1. 事务请求的唯一调度和处理者，保证集群事务处理的顺序性（并行->串行）
+            2. 集群内部各服务器的调度者
+            事务请求包含一个全局唯一的事务ID，所有的请求交给leader调度--ZAB
+        lead() 做一些初始化工作，然后 startZkServer(); // line 684
+        eg. -> new LearnerCnxAcceptor().run() -> 等待LearnerCnxAcceptorHandler.run()执行acceptConnections()
+            -> new LearnerHandler(socket, is, Leader.this).start 以Leader作为learnerMaster
+        最后在顶层父类ZooKeeperServer处调用startup()做了很多工作如：setupRequestProcessors()在子类LeaderZooKeeperServer
+        重写进行动态调用。
+        
+        4. 集群中系统间通信
+        5. 客户端与集群的通信
+            服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应6大环节。
+            客户端与服务端的所有通信都由NIOServerCnxn负责--负责统一接收客户端的所有请求，并将请求内容从底层网络I/O读取出来。
+            服务端同时实现了监视点管理器管理当前已被注册的监视点列表，并负责触发它们。
+        
+        总体模型：
+            系统间通信：leader选举通信、事务请求调度
+            客户端服务器：连接监视与请求处理
+        
+        
         
         
               
