@@ -14,7 +14,6 @@
     </properties>
 
     <dependencies>
-
         <!-- zookeeper源码研究start -->
         <!-- https://mvnrepository.com/artifact/org.xerial.snappy/snappy-java -->
         <dependency>
@@ -35,7 +34,34 @@
             <artifactId>zookeeper</artifactId>
             <version>3.6.0</version>
         </dependency>
+        <!--zookeeper分布式锁-->
+        <dependency>
+            <groupId>com.101tec</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.10</version>
+        </dependency>
+        <!--单机zookeeper启动找不到类-->
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.4.27.v20200227</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>9.4.27.v20200227</version>
+        </dependency>
         <!-- zookeeper源码研究end -->
+
+        <!-- lombox 减少冗余代码 setter getter等 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.redisson</groupId>

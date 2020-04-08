@@ -101,7 +101,7 @@
                 ZKClientConfig clientConfig)
         各参数具体含义参考从Paxos到Zookeeper 表5-2
 # zookeeper服务端 
-    源码环境搭建
+## 源码环境搭建
     这里直接使用maven自动下载的源码这里使用版本3.6.0，需要在本机建立数据目录并且需要添加相关依赖
     依赖见pom.xml
     配置文件见./src_run_local_config/**  
@@ -111,7 +111,7 @@
     
     先假定你对zookeeper一无所知，从main方法开始，来看java怎么实现一个zookeeper服务。
     
-    服务端主线程入口：QuorumPeerMain
+## 服务端主线程入口：QuorumPeerMain
         1. 解析命令行参数
             读取并解析进程配置文件，zookeeper不像spring对资源的加载和解析并没有做过多的封装，使用QuorumPeerConfig
         2. 启动清理任务线程
@@ -125,7 +125,7 @@
                ZooKeeperServerMain.main(args); // 静态方法调用
             }
 ```
-    确定一个leader
+### 1. 确定一个leader
         ZooKeeper分布式模式能保证了CAP理论中的CP，即一致性。通过leader对整个分布式系统(socket网)进行协调，最终使整个
         集群中的数据一致，由于分布式系统的复杂性，为便于维护管理，zookeeper集群（如启动时）确定leader前不对外提供服务。
         
@@ -261,25 +261,31 @@
         最后在顶层父类ZooKeeperServer处调用startup()做了很多工作如：setupRequestProcessors()在子类LeaderZooKeeperServer
         重写进行动态调用。
         
-        4. 集群中系统间通信
-        5. 客户端与集群的通信
-            服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应6大环节。
-            客户端与服务端的所有通信都由NIOServerCnxn负责--负责统一接收客户端的所有请求，并将请求内容从底层网络I/O读取出来。
-            服务端同时实现了监视点管理器管理当前已被注册的监视点列表，并负责触发它们。
+### 2. 集群中系统间通信
+### 3. 客户端与集群的通信
+        服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应6大环节。
+        客户端与服务端的所有通信都由NIOServerCnxn负责--负责统一接收客户端的所有请求，并将请求内容从底层网络I/O读取出来。
+        服务端同时实现了监视点管理器管理当前已被注册的监视点列表，并负责触发它们。
         
         总体模型：
             系统间通信：leader选举通信、事务请求调度
             客户端服务器：连接监视与请求处理
         
-        
-        
+        再看分布式系统：
+            透明性--提供facade，屏蔽内部复杂性（访问透明、位置、复制、并发、迁移、故障、规模扩展、性能、分布和实现）
+            名称服务、域名系统--分布式系统名称的有效性
+            时间服务--物理时钟和逻辑时钟的同步
+            选举算法--崩溃可恢复的主从模式，领导者协调分布式
+            中间件：进程间的通信，系统间的透明性
+            分布式计算机系统的确定性和不确定性
         
               
     zookeeper的配置文件参数配置：
         https://zookeeper.apache.org/doc/r3.6.0/zookeeperAdmin.html#sc_configuration
                
-                 
-# 应用场景与如何实现       
+# zookeeper分布式锁
+    见代码
+    
       
 # 参考资料
 * 分布式系统：概念与设计 原书第5版
@@ -290,6 +296,9 @@
 * ZooKeeper分布式过程协同技术详解
 * https://zh.wikipedia.org/zh-hans/Paxos算法
 * https://zhuanlan.zhihu.com/p/27335748
+* https://stephenzhou.net/2020/01/13/zookeeper-src-build/
+* http://www.imooc.com/article/284956
+* https://www.cnblogs.com/leeSmall/p/9614601.html
 
 
 
