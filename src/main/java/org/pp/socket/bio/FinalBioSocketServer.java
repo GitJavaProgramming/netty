@@ -2,9 +2,7 @@ package org.pp.socket.bio;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 import static org.pp.socket.CommandConstant.SERVER_PORT;
 
@@ -15,6 +13,9 @@ import static org.pp.socket.CommandConstant.SERVER_PORT;
 public final class FinalBioSocketServer {
 
     private static ExecutorService service = null;
+    private static CompletableFuture<ExecutorService> completableFuture;
+    /** 帮助线程池 */
+    private static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 
     public static void main(String[] args) {
 
@@ -22,13 +23,13 @@ public final class FinalBioSocketServer {
 
         initService();
 
-        initServer(service);
+        initServer();
     }
 
     /**
      * 阻塞通信 在接收连接、读写数据时
      */
-    public static void initServer(ExecutorService service) {
+    public static void initServer(/*ExecutorService service*/) {
         try (/*ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();ServerSocket serverSocket = serverSocketChannel.socket();*/
                 ServerSocket serverSocket = new ServerSocket(/*PORT 指定port查看默认选项信息*/)) {
 //            serverSocket.getChannel();  // 可以获得channel
@@ -44,11 +45,15 @@ public final class FinalBioSocketServer {
 
 //                handleClientConnection(socket);
 //                handleClientConnection2(socket);
-                handleClientConnection(service, socket);
+                handleClientConnection(completableFuture.get(), socket); // 异步线程池初始化
             }
 
         } catch (IOException e) {
             e.printStackTrace();   // 打印异常栈，自定义异常处理器
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         } finally {
             hook();
         }
@@ -73,12 +78,16 @@ public final class FinalBioSocketServer {
      * 生成线程池，用于处理客户端连接
      * 关于线程池：在核心线程为满工作状态时，是不会往调度队列里面排队的
      */
-    private static ExecutorService initService() {
+    private static Future<ExecutorService> initService() {
         int poolSize = Runtime.getRuntime().availableProcessors() * 2;
-        if (service == null) {
-            service = Executors.newScheduledThreadPool(poolSize);
-        }
-        return service;
+        completableFuture = new CompletableFuture();
+        singleThreadExecutor.execute(()-> {
+            if (service == null) {
+                service = Executors.newScheduledThreadPool(poolSize);
+                completableFuture.complete(service);
+            }
+        });
+        return completableFuture;
     }
 
     /**
@@ -142,6 +151,7 @@ public final class FinalBioSocketServer {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("服务器超时关闭...");
             service.shutdown(); // 关闭线程池
+            singleThreadExecutor.shutdown(); // 关闭帮助线程
         }));
 
         /*
