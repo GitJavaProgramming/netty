@@ -14,47 +14,6 @@
     </properties>
 
     <dependencies>
-        <!-- zookeeper源码研究start -->
-        <!-- https://mvnrepository.com/artifact/org.xerial.snappy/snappy-java -->
-        <dependency>
-            <groupId>org.xerial.snappy</groupId>
-            <artifactId>snappy-java</artifactId>
-            <version>1.1.7.3</version>
-        </dependency>
-        <!-- zookeeper QuorumPeerMain启动时找不到类-->
-        <!-- https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core -->
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>4.1.5</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>3.6.0</version>
-        </dependency>
-        <!--zookeeper分布式锁-->
-        <dependency>
-            <groupId>com.101tec</groupId>
-            <artifactId>zkclient</artifactId>
-            <version>0.10</version>
-        </dependency>
-        <!--单机zookeeper启动找不到类-->
-        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.4.27.v20200227</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>9.4.27.v20200227</version>
-        </dependency>
-        <!-- zookeeper源码研究end -->
-
         <!-- lombox 减少冗余代码 setter getter等 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -63,18 +22,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- vert 异步框架 -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>3.8.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>3.11.6</version>
-        </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
